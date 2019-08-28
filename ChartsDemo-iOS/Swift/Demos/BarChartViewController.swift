@@ -32,7 +32,8 @@ class BarChartViewController: DemoBaseViewController {
                         .togglePinchZoom,
                         .toggleData,
                         .toggleBarBorders,
-                        .toggleBarGradient]
+                        .toggleBarGradient,
+                        .toggleRoundedCorners]
         
         self.setup(barLineChartView: chartView)
         
@@ -147,6 +148,16 @@ class BarChartViewController: DemoBaseViewController {
                     set.barGradientColors = ChartColorTemplates.gradients()
                 } else {
                     set.barGradientColors = nil
+                }
+            }
+            chartView.notifyDataSetChanged()
+        case .toggleRoundedCorners:
+            for set in chartView.data!.dataSets as! [BarChartDataSet] {
+                if set.roundedCorners == [] {
+                    set.roundedCornerRadii = CGSize(width: 5, height: 5)
+                    set.roundedCorners = [.topLeft, .topRight]
+                } else {
+                    set.roundedCorners = []
                 }
             }
             chartView.notifyDataSetChanged()

@@ -50,6 +50,7 @@ enum Option {
     case toggleHighlightCircle
     // VericalBarChart
     case toggleBarGradient
+    case toggleRoundedCorners
     
     var label: String {
         switch self {
@@ -93,6 +94,7 @@ enum Option {
         case .toggleHighlightCircle: return "Toggle highlight circle"
         // VericalBarChart
         case .toggleBarGradient: return "Toggle Bar Gradient"
+        case .toggleRoundedCorners: return "Toggle Rounded Corners"
         }
     }
 }

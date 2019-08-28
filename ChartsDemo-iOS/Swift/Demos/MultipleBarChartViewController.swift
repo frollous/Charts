@@ -33,7 +33,8 @@ class MultipleBarChartViewController: DemoBaseViewController {
                         .toggleAutoScaleMinMax,
                         .toggleData,
                         .toggleBarBorders,
-                        .toggleBarGradient]
+                        .toggleBarGradient,
+                        .toggleRoundedCorners]
         
         chartView.delegate = self
         
@@ -146,6 +147,16 @@ class MultipleBarChartViewController: DemoBaseViewController {
                     set.barGradientColors = ChartColorTemplates.gradients()
                 } else {
                     set.barGradientColors = nil
+                }
+            }
+            chartView.notifyDataSetChanged()
+        case .toggleRoundedCorners:
+            for set in chartView.data!.dataSets as! [BarChartDataSet] {
+                if set.roundedCorners == [] {
+                    set.roundedCornerRadii = CGSize(width: 5, height: 5)
+                    set.roundedCorners = [.topLeft, .topRight]
+                } else {
+                    set.roundedCorners = []
                 }
             }
             chartView.notifyDataSetChanged()

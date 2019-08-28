@@ -32,7 +32,8 @@ class AnotherBarChartViewController: DemoBaseViewController {
                         .togglePinchZoom,
                         .toggleData,
                         .toggleBarBorders,
-                        .toggleBarGradient]
+                        .toggleBarGradient,
+                        .toggleRoundedCorners]
         
         chartView.delegate = self
         
@@ -96,6 +97,16 @@ class AnotherBarChartViewController: DemoBaseViewController {
                     set.barGradientOrientation = .horizontal
                 } else {
                     set.barGradientColors = nil
+                }
+            }
+            chartView.notifyDataSetChanged()
+        case .toggleRoundedCorners:
+            for set in chartView.data!.dataSets as! [BarChartDataSet] {
+                if set.roundedCorners == [] {
+                    set.roundedCornerRadii = CGSize(width: 5, height: 5)
+                    set.roundedCorners = [.topLeft, .topRight]
+                } else {
+                    set.roundedCorners = []
                 }
             }
             chartView.notifyDataSetChanged()

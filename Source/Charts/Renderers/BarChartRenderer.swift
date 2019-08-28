@@ -350,43 +350,47 @@ open class BarChartRenderer: BarLineScatterCandleBubbleRenderer
         context.saveGState()
         defer { context.restoreGState() }
         
+        let path = UIBezierPath(roundedRect: barRect,
+                                byRoundingCorners: dataSet.roundedCorners,
+                                cornerRadii: dataSet.roundedCornerRadii).cgPath
+        
+        context.addPath(path)
+        
         if let gradientColor = dataSet.barGradientColor(at: index)
         {
-            drawGradient(context: context, barRect: barRect, gradientColors: gradientColor, orientation: dataSet.barGradientOrientation)
+            let cgColors = gradientColor.map{ $0.cgColor } as CFArray
+            let gradient = CGGradient(colorsSpace: CGColorSpaceCreateDeviceRGB(), colors: cgColors, locations: nil)
+            
+            let startPoint: CGPoint
+            let endPoint: CGPoint
+            
+            switch dataSet.barGradientOrientation
+            {
+                case .vertical:
+                    startPoint = CGPoint(x: barRect.midX, y: barRect.maxY)
+                    endPoint = CGPoint(x: barRect.midX, y: barRect.minY)
+                
+                case .horizontal:
+                    startPoint = CGPoint(x: barRect.minX, y: barRect.midY)
+                    endPoint = CGPoint(x: barRect.maxX, y: barRect.midY)
+            }
+            
+            context.clip()
+            context.drawLinearGradient(gradient!, start: startPoint, end: endPoint, options: [])
         }
         else
         {
             // Set the color for the currently drawn value. If the index is out of bounds, reuse colors.
             let fillColor = dataSet.color(atIndex: index).cgColor
+            
             context.setFillColor(fillColor)
-            context.fill(barRect)
+            context.fillPath()
         }
     }
     
-    open func drawGradient(context: CGContext, barRect: CGRect, gradientColors: Array<NSUIColor>, orientation: BarGradientOrientation)
+    open func drawGradient(context: CGContext, barRect: CGRect, gradientColors: Array<NSUIColor>, roundedCorners: UIRectCorner, cornerRadii: CGSize, orientation: BarGradientOrientation)
     {
-        let cgColors = gradientColors.map{ $0.cgColor } as CFArray
-        let gradient = CGGradient(colorsSpace: CGColorSpaceCreateDeviceRGB(), colors: cgColors, locations: nil)
-
-        let startPoint: CGPoint
-        let endPoint: CGPoint
         
-        switch orientation
-        {
-        case .vertical:
-            startPoint = CGPoint(x: barRect.midX, y: barRect.maxY)
-            endPoint = CGPoint(x: barRect.midX, y: barRect.minY)
-            
-        case .horizontal:
-            startPoint = CGPoint(x: barRect.minX, y: barRect.midY)
-            endPoint = CGPoint(x: barRect.maxX, y: barRect.midY)
-        }
-        
-        let path = CGPath(rect: barRect, transform: nil)
-        
-        context.addPath(path)
-        context.clip()
-        context.drawLinearGradient(gradient!, start: startPoint, end: endPoint, options: [])
     }
     
     open func prepareBarHighlight(
