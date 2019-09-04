@@ -92,6 +92,12 @@ open class ChartColorTemplates: NSObject
                 [palette[4], palette[0]]]
     }
     
+    @objc open class func highlightGradients () -> [NSUIColor]
+    {
+        let palette = vordiplom()
+        return [palette[0], palette[1]]
+    }
+    
     @objc open class func colorFromString(_ colorString: String) -> NSUIColor
     {
         let leftParenCharset: CharacterSet = CharacterSet(charactersIn: "( ")

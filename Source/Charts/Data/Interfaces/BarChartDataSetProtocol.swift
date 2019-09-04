@@ -49,6 +49,11 @@ public protocol BarChartDataSetProtocol: BarLineScatterCandleBubbleChartDataSetP
     /// This prevents out-of-bounds by performing a modulus on the gradient color index, so colours will repeat themselves.
     func barGradientColor(at index: Int) -> [NSUIColor]?
     
+    /// array of highlight gradient colors [[color1, color2], [color3, color4]]
+    var barHighlightGradientColors: [NSUIColor]? { get set }
+    
+    var barHighlightGradientOrientation: BarGradientOrientation { get set }
+    
     /// rounded corner radius
     var roundedCornerRadii: CGSize { get set }
     

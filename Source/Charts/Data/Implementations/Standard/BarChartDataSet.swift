@@ -137,6 +137,11 @@ open class BarChartDataSet: BarLineScatterCandleBubbleChartDataSet, BarChartData
         return gradientColors[index % gradientColors.count]
     }
     
+    /// array of highlight gradient colors [[color1, color2], [color3, color4]]
+    open var barHighlightGradientColors: [NSUIColor]?
+    
+    open var barHighlightGradientOrientation: BarGradientOrientation = .vertical
+    
     /// rounded corner radius
     open var roundedCornerRadii: CGSize = CGSize.zero
     

@@ -94,6 +94,7 @@ class AnotherBarChartViewController: DemoBaseViewController {
             for set in chartView.data!.dataSets as! [BarChartDataSet] {
                 if set.barGradientColors == nil {
                     set.barGradientColors = ChartColorTemplates.gradients()
+                    set.barHighlightGradientColors = ChartColorTemplates.highlightGradients()
                     set.barGradientOrientation = .horizontal
                 } else {
                     set.barGradientColors = nil
