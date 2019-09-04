@@ -410,6 +410,8 @@ open class HorizontalBarChartRenderer: BarChartRenderer
                             drawValue(
                                 context: context,
                                 value: valueText,
+                                x: e.x,
+                                y: e.y,
                                 xPos: (rect.origin.x + rect.size.width)
                                     + (val >= 0.0 ? posOffset : negOffset),
                                 yPos: y + yOffset,
@@ -490,6 +492,8 @@ open class HorizontalBarChartRenderer: BarChartRenderer
                                 drawValue(
                                     context: context,
                                     value: valueText,
+                                    x: e.x,
+                                    y: e.y,
                                     xPos: (rect.origin.x + rect.size.width)
                                         + (val >= 0.0 ? posOffset : negOffset),
                                     yPos: rect.origin.y + yOffset,
@@ -592,6 +596,8 @@ open class HorizontalBarChartRenderer: BarChartRenderer
                                 {
                                     drawValue(context: context,
                                               value: valueText,
+                                              x: e.x,
+                                              y: e.y,
                                               xPos: x,
                                               yPos: y + yOffset,
                                               font: valueFont,

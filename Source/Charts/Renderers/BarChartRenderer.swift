@@ -488,6 +488,8 @@ open class BarChartRenderer: BarLineScatterCandleBubbleRenderer
                                     entry: e,
                                     dataSetIndex: dataSetIndex,
                                     viewPortHandler: viewPortHandler),
+                                x: e.x,
+                                y: e.y,
                                 xPos: x,
                                 yPos: val >= 0.0
                                     ? (rect.origin.y + posOffset)
@@ -586,6 +588,8 @@ open class BarChartRenderer: BarLineScatterCandleBubbleRenderer
                                             entry: e,
                                             dataSetIndex: dataSetIndex,
                                             viewPortHandler: viewPortHandler),
+                                        x: e.x,
+                                        y: e.y,
                                         xPos: x,
                                         yPos: y,
                                         font: valueFont,
@@ -619,6 +623,8 @@ open class BarChartRenderer: BarLineScatterCandleBubbleRenderer
                                         entry: e,
                                         dataSetIndex: dataSetIndex,
                                         viewPortHandler: viewPortHandler),
+                                    x: e.x,
+                                    y: e.y,
                                     xPos: x,
                                     yPos: rect.origin.y +
                                         (e.y >= 0 ? posOffset : negOffset),
@@ -652,7 +658,7 @@ open class BarChartRenderer: BarLineScatterCandleBubbleRenderer
     }
     
     /// Draws a value at the specified x and y position.
-    @objc open func drawValue(context: CGContext, value: String, xPos: CGFloat, yPos: CGFloat, font: NSUIFont, align: NSTextAlignment, color: NSUIColor, anchor: CGPoint, angleRadians: CGFloat)
+    @objc open func drawValue(context: CGContext, value: String, x: Double, y: Double, xPos: CGFloat, yPos: CGFloat, font: NSUIFont, align: NSTextAlignment, color: NSUIColor, anchor: CGPoint, angleRadians: CGFloat)
     {
         if (angleRadians == 0.0)
         {
