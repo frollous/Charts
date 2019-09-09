@@ -352,9 +352,10 @@ open class BarChartRenderer: BarLineScatterCandleBubbleRenderer
         
         let path = UIBezierPath(roundedRect: barRect,
                                 byRoundingCorners: dataSet.roundedCorners,
-                                cornerRadii: dataSet.roundedCornerRadii).cgPath
+                                cornerRadii: dataSet.roundedCornerRadii)
         
-        context.addPath(path)
+        path.addClip()
+        context.addPath(path.cgPath)
         
         if let gradientColor = dataSet.barGradientColor(at: index)
         {
@@ -375,7 +376,6 @@ open class BarChartRenderer: BarLineScatterCandleBubbleRenderer
                     endPoint = CGPoint(x: barRect.maxX, y: barRect.midY)
             }
             
-            context.clip()
             context.drawLinearGradient(gradient!, start: startPoint, end: endPoint, options: [.drawsAfterEndLocation, .drawsBeforeStartLocation])
         }
         else
@@ -736,9 +736,10 @@ open class BarChartRenderer: BarLineScatterCandleBubbleRenderer
                 
                 let path = UIBezierPath(roundedRect: barRect,
                                         byRoundingCorners: set.roundedCorners,
-                                        cornerRadii: set.roundedCornerRadii).cgPath
+                                        cornerRadii: set.roundedCornerRadii)
                 
-                context.addPath(path)
+                path.addClip()
+                context.addPath(path.cgPath)
                 
                 if let gradientColors = set.barHighlightGradientColors
                 {
@@ -759,7 +760,6 @@ open class BarChartRenderer: BarLineScatterCandleBubbleRenderer
                             endPoint = CGPoint(x: barRect.maxX, y: barRect.midY)
                     }
                     
-                    context.clip()
                     context.drawLinearGradient(gradient!, start: startPoint, end: endPoint, options: [.drawsAfterEndLocation, .drawsBeforeStartLocation])
                 }
                 else
