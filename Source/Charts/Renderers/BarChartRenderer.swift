@@ -376,7 +376,7 @@ open class BarChartRenderer: BarLineScatterCandleBubbleRenderer
             }
             
             context.clip()
-            context.drawLinearGradient(gradient!, start: startPoint, end: endPoint, options: [])
+            context.drawLinearGradient(gradient!, start: startPoint, end: endPoint, options: [.drawsAfterEndLocation, .drawsBeforeStartLocation])
         }
         else
         {
@@ -760,7 +760,7 @@ open class BarChartRenderer: BarLineScatterCandleBubbleRenderer
                     }
                     
                     context.clip()
-                    context.drawLinearGradient(gradient!, start: startPoint, end: endPoint, options: [])
+                    context.drawLinearGradient(gradient!, start: startPoint, end: endPoint, options: [.drawsAfterEndLocation, .drawsBeforeStartLocation])
                 }
                 else
                 {

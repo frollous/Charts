@@ -869,7 +869,7 @@ open class LineChartRenderer: LineRadarRenderer
         context.addPath(spline)
         context.replacePathWithStrokedPath()
         context.clip()
-        context.drawLinearGradient(gradient, start: gradientStart, end: gradientEnd, options: [])
+        context.drawLinearGradient(gradient, start: gradientStart, end: gradientEnd, options: [.drawsAfterEndLocation, .drawsBeforeStartLocation])
     }
     
     /// Creates a nested array of empty subarrays each of which will be populated with NSUIAccessibilityElements.
