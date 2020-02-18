@@ -28,8 +28,8 @@ open class BarLineChartViewBase: ChartViewBase, BarLineScatterCandleBubbleChartD
     
     private var _pinchZoomEnabled = false
     private var _doubleTapToZoomEnabled = true
-    private var _dragXEnabled = true
-    private var _dragYEnabled = true
+    private var _dragXEnabled = false
+    private var _dragYEnabled = false
     
     private var _scaleXEnabled = true
     private var _scaleYEnabled = true
