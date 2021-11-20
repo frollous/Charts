@@ -4,6 +4,11 @@ import PackageDescription
 
 let package = Package(
     name: "Charts",
+    defaultLocalization: "en",
+    platforms: [
+        .iOS(.v12)
+//        .watchOS(.v4)
+    ],
     products: [
         .library(name: "Charts", type: .dynamic, targets: ["Charts"])
     ],
