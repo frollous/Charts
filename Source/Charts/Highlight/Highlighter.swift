@@ -13,7 +13,7 @@ import Foundation
 import CoreGraphics
 
 @objc(ChartHighlighter)
-public protocol Highlighter: class
+public protocol Highlighter: AnyObject
 {
     /// - returns: A Highlight object corresponding to the given x- and y- touch positions in pixels.
     /// - parameter x:
