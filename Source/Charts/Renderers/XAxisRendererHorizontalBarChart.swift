@@ -11,20 +11,31 @@
 
 import Foundation
 import CoreGraphics
-
+#if os(iOS) || os(tvOS) || os(watchOS)
+import UIKit
+#else // macOS
+import AppKit
+#endif
 
 open class XAxisRendererHorizontalBarChart: XAxisRenderer
 {
     internal weak var chart: BarChartView?
     
-    @objc public init(viewPortHandler: ViewPortHandler, axis: XAxis, transformer: Transformer?, chart: BarChartView)
+    @objc public init(viewPortHandler: ViewPortHandler,
+                      axis: XAxis,
+                      transformer: Transformer?,
+                      chart: BarChartView)
     {
-        super.init(viewPortHandler: viewPortHandler, axis: axis, transformer: transformer)
+        super.init(viewPortHandler: viewPortHandler,
+                   axis: axis,
+                   transformer: transformer)
         
         self.chart = chart
     }
     
-    open override func computeAxis(min: Double, max: Double, inverted: Bool)
+    open override func computeAxis(min: Double,
+                                   max: Double,
+                                   inverted: Bool)
     {
         var min = min, max = max
         
@@ -90,7 +101,9 @@ open class XAxisRendererHorizontalBarChart: XAxisRenderer
     }
 
     /// draws the x-labels on the specified y-position
-    open override func drawLabels(context: CGContext, pos: CGFloat, anchor: CGPoint)
+    open override func drawLabels(context: CGContext,
+                                  pos: CGFloat,
+                                  anchor: CGPoint)
     {
         guard let transformer = self.transformer else { return }
         
@@ -150,7 +163,9 @@ open class XAxisRendererHorizontalBarChart: XAxisRenderer
         return contentRect
     }
 
-    open override func drawGridLine(context: CGContext, x: CGFloat, y: CGFloat)
+    open override func drawGridLine(context: CGContext,
+                                    x: CGFloat,
+                                    y: CGFloat)
     {
         guard viewPortHandler.isInBoundsY(y) else { return }
 

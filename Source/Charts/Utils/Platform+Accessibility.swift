@@ -1,6 +1,7 @@
 import Foundation
 
-#if os(iOS) || os(tvOS)
+#if os(iOS) || os(tvOS) || os(watchOS)
+import UIKit
 
 internal func accessibilityPostLayoutChangedNotification(withElement element: Any? = nil)
 {
@@ -190,4 +191,4 @@ extension NSUIView: NSAccessibilityGroup
     }
 }
 
-#endif
+#endif  // #if os(iOS) || os(tvOS) || os(watchOS)

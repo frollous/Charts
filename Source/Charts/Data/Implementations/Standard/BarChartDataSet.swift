@@ -11,6 +11,11 @@
 
 import Foundation
 import CoreGraphics
+#if os(iOS) || os(tvOS) || os(watchOS)
+import UIKit
+#else // macOS
+import AppKit
+#endif
 
 @objc
 public enum BarGradientOrientation: Int
@@ -146,7 +151,9 @@ open class BarChartDataSet: BarLineScatterCandleBubbleChartDataSet, BarChartData
     open var roundedCornerRadii: CGSize = CGSize.zero
     
     /// corners to be rounded
+    #if os(iOS) || os(tvOS) || os(watchOS)
     open var roundedCorners: UIRectCorner = []
+    #endif  // NC don't know AppKit equivalent
     
     // MARK: - NSCopying
     

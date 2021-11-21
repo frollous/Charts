@@ -1,4 +1,4 @@
-**Version 3.2.1**, synced to [MPAndroidChart #f6a398b](https://github.com/PhilJay/MPAndroidChart/commit/f6a398b)
+**Version 4.1.0 (based on 3.2.1)**, synced to [MPAndroidChart #f6a398b](https://github.com/PhilJay/MPAndroidChart/commit/f6a398b)
 
 ![alt tag](https://raw.github.com/danielgindi/Charts/master/Assets/feature_graphic.png)
   ![Supported Platforms](https://img.shields.io/cocoapods/p/Charts.svg) [![Releases](https://img.shields.io/github/release/danielgindi/Charts.svg)](https://github.com/danielgindi/Charts/releases) [![Latest pod release](https://img.shields.io/cocoapods/v/Charts.svg)](http://cocoapods.org/pods/charts) [![Carthage compatible](https://img.shields.io/badge/Carthage-compatible-4BC51D.svg?style=flat)](https://github.com/Carthage/Carthage) [![Build Status](https://travis-ci.org/danielgindi/Charts.svg?branch=master)](https://travis-ci.org/danielgindi/Charts) [![codecov](https://codecov.io/gh/danielgindi/Charts/branch/master/graph/badge.svg)](https://codecov.io/gh/danielgindi/Charts)
@@ -8,10 +8,11 @@
 ### Another heads up: ChartsRealm is now in a [separate repo](https://github.com/danielgindi/ChartsRealm). Pods is also now `Charts` and `ChartsRealm`, instead of ~`Charts/Core`~ and ~`Charts/Realm`~
 ### One more heads up: As Swift evolves, if you are not using latest Swift compiler, you shouldn't check out master branch. Instead, you should go to release page and pick up whatever suits you.
 
-* Xcode 10.0 / Swift 4.2 (master branch)
-* iOS >= 8.0 (Use as an **Embedded** Framework)
-* tvOS >= 9.0
-* macOS >= 10.11
+* Xcode 12.0 / Swift 5.0 (master branch)
+* iOS >= 12.0 (Use as an **Embedded** Framework)
+* tvOS >= 10.0
+* watchOS >= 4.0
+* macOS >= 10.13
 
 Okay so there's this beautiful library called [MPAndroidChart](https://github.com/PhilJay/MPAndroidChart) by [Philipp Jahoda](https://www.linkedin.com/in/philippjahoda) which has become very popular amongst Android developers, and in the meanwhile there's no decent charting solution for iOS.
 
@@ -31,8 +32,17 @@ I've chosen to write it in `Swift` as it can be highly optimized by the compiler
   * If you don't have Carthage - you can get it [here](https://github.com/Carthage/Carthage/releases).
 
 
-## Usage
+## Usage with Swift Package Manager
+4.0.0 was a clone of 3.2.1 but private for Frollo, but remained Swift 4.
+4.1.0 is a copy of that, upgraded to Swift 5.x, best-effort corrections for addditional #if around which os to get correct UIKit/AppKit imports
 
+* in the app project, for each app target
+ * General pane, make sure the old carthage-based Charts framework is removed
+ * Build phase, in the Copy Carthage frameworks phase, ensure the old Charts framework is not listed in the Input or Output files
+* Add the Swift package from the Frollo repository, specifying the branch (4.1.0), with one app target. 
+ *For each other app target in the Project Navigator, in the General pane, in the Frameworks, Libraries and Embedded Content, add a dependency on the package-based Charts framework
+
+## Original Usage (not actually used this way by Frollo for 4.0.0)
 In order to correctly compile:
 
 1. Drag the `Charts.xcodeproj` to your project  

@@ -11,6 +11,11 @@
 
 import Foundation
 import CoreGraphics
+#if os(iOS) || os(tvOS) || os(watchOS)
+import UIKit
+#else // macOS
+import AppKit
+#endif
 
 extension Comparable {
     func clamped(to range: ClosedRange<Self>) -> Self {
@@ -102,7 +107,8 @@ extension Double
 extension CGPoint
 {
     /// Calculates the position around a center point, depending on the distance from the center, and the angle of the position around the center.
-    func moving(distance: CGFloat, atAngle angle: CGFloat) -> CGPoint
+    func moving(distance: CGFloat,
+                atAngle angle: CGFloat) -> CGPoint
     {
         return CGPoint(x: x + distance * cos(angle.DEG2RAD),
                        y: y + distance * sin(angle.DEG2RAD))
@@ -111,7 +117,8 @@ extension CGPoint
 
 extension CGContext {
 
-    open func drawImage(_ image: NSUIImage, atCenter center: CGPoint, size: CGSize)
+    open func drawImage(_ image: NSUIImage,
+                        atCenter center: CGPoint, size: CGSize)
     {
         var drawOffset = CGPoint()
         drawOffset.x = center.x - (size.width / 2)
@@ -149,7 +156,12 @@ extension CGContext {
         NSUIGraphicsPopContext()
     }
 
-    open func drawText(_ text: String, at point: CGPoint, align: NSTextAlignment, anchor: CGPoint = CGPoint(x: 0.5, y: 0.5), angleRadians: CGFloat = 0.0, attributes: [NSAttributedString.Key : Any]?)
+    open func drawText(_ text: String,
+                       at point: CGPoint,
+                       align: NSTextAlignment,
+                       anchor: CGPoint = CGPoint(x: 0.5, y: 0.5),
+                       angleRadians: CGFloat = 0.0,
+                       attributes: [NSAttributedString.Key : Any]?)
     {
         let drawPoint = getDrawPoint(text: text, point: point, align: align, attributes: attributes)
         
@@ -167,7 +179,11 @@ extension CGContext {
         }
     }
     
-    open func drawText(_ text: String, at point: CGPoint, anchor: CGPoint = CGPoint(x: 0.5, y: 0.5), angleRadians: CGFloat, attributes: [NSAttributedString.Key : Any]?)
+    open func drawText(_ text: String,
+                       at point: CGPoint,
+                       anchor: CGPoint = CGPoint(x: 0.5, y: 0.5),
+                       angleRadians: CGFloat,
+                       attributes: [NSAttributedString.Key : Any]?)
     {
         var drawOffset = CGPoint()
 
@@ -219,7 +235,10 @@ extension CGContext {
         NSUIGraphicsPopContext()
     }
 
-    private func getDrawPoint(text: String, point: CGPoint, align: NSTextAlignment, attributes: [NSAttributedString.Key : Any]?) -> CGPoint
+    private func getDrawPoint(text: String,
+                              point: CGPoint,
+                              align: NSTextAlignment,
+                              attributes: [NSAttributedString.Key : Any]?) -> CGPoint
     {
         var point = point
         
@@ -234,7 +253,13 @@ extension CGContext {
         return point
     }
     
-    func drawMultilineText(_ text: String, at point: CGPoint, constrainedTo size: CGSize, anchor: CGPoint, knownTextSize: CGSize, angleRadians: CGFloat, attributes: [NSAttributedString.Key : Any]?)
+    func drawMultilineText(_ text: String,
+                           at point: CGPoint,
+                           constrainedTo size: CGSize,
+                           anchor: CGPoint,
+                           knownTextSize: CGSize,
+                           angleRadians: CGFloat,
+                           attributes: [NSAttributedString.Key : Any]?)
     {
         var rect = CGRect(origin: .zero, size: knownTextSize)
 
@@ -282,7 +307,12 @@ extension CGContext {
         NSUIGraphicsPopContext()
     }
 
-    func drawMultilineText(_ text: String, at point: CGPoint, constrainedTo size: CGSize, anchor: CGPoint, angleRadians: CGFloat, attributes: [NSAttributedString.Key : Any]?)
+    func drawMultilineText(_ text: String,
+                           at point: CGPoint,
+                           constrainedTo size: CGSize,
+                           anchor: CGPoint,
+                           angleRadians: CGFloat,
+                           attributes: [NSAttributedString.Key : Any]?)
     {
         let rect = text.boundingRect(with: size, options: .usesLineFragmentOrigin, attributes: attributes, context: nil)
         drawMultilineText(text, at: point, constrainedTo: size, anchor: anchor, knownTextSize: rect.size, angleRadians: angleRadians, attributes: attributes)

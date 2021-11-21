@@ -11,17 +11,27 @@
 
 import Foundation
 import CoreGraphics
-
+#if os(iOS) || os(tvOS) || os(watchOS)
+import UIKit
+#else // macOS
+import AppKit
+#endif
 
 open class YAxisRendererHorizontalBarChart: YAxisRenderer
 {
-    public override init(viewPortHandler: ViewPortHandler, axis: YAxis, transformer: Transformer?)
+    public override init(viewPortHandler: ViewPortHandler,
+                         axis: YAxis,
+                         transformer: Transformer?)
     {
-        super.init(viewPortHandler: viewPortHandler, axis: axis, transformer: transformer)
+        super.init(viewPortHandler: viewPortHandler,
+                   axis: axis,
+                   transformer: transformer)
     }
 
     /// Computes the axis values.
-    open override func computeAxis(min: Double, max: Double, inverted: Bool)
+    open override func computeAxis(min: Double,
+                                   max: Double,
+                                   inverted: Bool)
     {
         var min = min, max = max
         

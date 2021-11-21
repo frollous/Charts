@@ -11,7 +11,11 @@
 
 import Foundation
 import CoreGraphics
-
+#if os(iOS) || os(tvOS) || os(watchOS)
+import UIKit
+#else // macOS
+import AppKit
+#endif
 
 @objc(ChartXAxisRenderer)
 open class XAxisRenderer: NSObject, AxisRenderer
@@ -20,7 +24,9 @@ open class XAxisRenderer: NSObject, AxisRenderer
     public let axis: XAxis
     public let transformer: Transformer?
 
-    @objc public init(viewPortHandler: ViewPortHandler, axis: XAxis, transformer: Transformer?)
+    @objc public init(viewPortHandler: ViewPortHandler,
+                      axis: XAxis,
+                      transformer: Transformer?)
     {
         self.viewPortHandler = viewPortHandler
         self.axis = axis
@@ -29,7 +35,9 @@ open class XAxisRenderer: NSObject, AxisRenderer
         super.init()
     }
     
-    open func computeAxis(min: Double, max: Double, inverted: Bool)
+    open func computeAxis(min: Double,
+                          max: Double,
+                          inverted: Bool)
     {
         var min = min, max = max
         
@@ -49,7 +57,8 @@ open class XAxisRenderer: NSObject, AxisRenderer
         computeAxisValues(min: min, max: max)
     }
     
-    open func computeAxisValues(min: Double, max: Double)
+    open func computeAxisValues(min: Double,
+                                max: Double)
     {
         let yMin = min
         let yMax = max
@@ -243,7 +252,9 @@ open class XAxisRenderer: NSObject, AxisRenderer
     }
     
     /// draws the x-labels on the specified y-position
-    @objc open func drawLabels(context: CGContext, pos: CGFloat, anchor: CGPoint)
+    @objc open func drawLabels(context: CGContext,
+                               pos: CGFloat,
+                               anchor: CGPoint)
     {
         guard let transformer = self.transformer else { return }
         
@@ -380,7 +391,9 @@ open class XAxisRenderer: NSObject, AxisRenderer
         return contentRect
     }
     
-    @objc open func drawGridLine(context: CGContext, x: CGFloat, y: CGFloat)
+    @objc open func drawGridLine(context: CGContext,
+                                 x: CGFloat,
+                                 y: CGFloat)
     {
         guard (viewPortHandler.offsetLeft...viewPortHandler.chartWidth).contains(x) else { return }
 
@@ -421,7 +434,9 @@ open class XAxisRenderer: NSObject, AxisRenderer
         }
     }
     
-    @objc open func renderLimitLineLine(context: CGContext, limitLine: ChartLimitLine, position: CGPoint)
+    @objc open func renderLimitLineLine(context: CGContext,
+                                        limitLine: ChartLimitLine,
+                                        position: CGPoint)
     {
         context.beginPath()
         context.move(to: CGPoint(x: position.x, y: viewPortHandler.contentTop))
@@ -441,7 +456,10 @@ open class XAxisRenderer: NSObject, AxisRenderer
         context.strokePath()
     }
     
-    @objc open func renderLimitLineLabel(context: CGContext, limitLine: ChartLimitLine, position: CGPoint, yOffset: CGFloat)
+    @objc open func renderLimitLineLabel(context: CGContext,
+                                         limitLine: ChartLimitLine,
+                                         position: CGPoint,
+                                         yOffset: CGFloat)
     {
         let label = limitLine.label
         
