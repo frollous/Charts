@@ -12,7 +12,7 @@ let package = Package(
         .watchOS(.v4)
     ],
     products: [
-        .library(name: "Charts", type: .dynamic, targets: ["Charts"])
+        .library(name: "Charts", targets: ["Charts"])
     ],
     dependencies: [],
     targets: [
