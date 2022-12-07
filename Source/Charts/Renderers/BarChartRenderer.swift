@@ -181,9 +181,9 @@ open class BarChartRenderer: BarLineScatterCandleBubbleRenderer
 
                     let offsetAxis = offsetView.leftAxis.isEnabled ? offsetView.leftAxis : offsetView.rightAxis
 
-                    if barData.yMin.sign != barData.yMax.sign 
-                    { 
-                        offset = 0.0 
+                    if barData.yMin.sign != barData.yMax.sign
+                    {
+                        offset = 0.0
                     }
                     else if !offsetAxis._customAxisMin {
                         offset = CGFloat(offsetAxis.axisMinimum)
@@ -419,7 +419,7 @@ open class BarChartRenderer: BarLineScatterCandleBubbleRenderer
                 let barData = dataProvider.barData
                 else { return }
 
-            var dataSets = barData.dataSets
+            let dataSets = barData.dataSets
 
             let valueOffsetPlus: CGFloat = 4.5
             var posOffset: CGFloat
@@ -742,25 +742,31 @@ open class BarChartRenderer: BarLineScatterCandleBubbleRenderer
                 
                 if let gradientColors = set.barHighlightGradientColors
                 {
-                    let cgColors = gradientColors.map{ $0.cgColor } as CFArray
-                    let gradient = CGGradient(colorsSpace: CGColorSpaceCreateDeviceRGB(), colors: cgColors, locations: nil)
+                    #warning("The drawing of highlight is not working with gradient colors as it doesnt correctly calculate highlighted frame. Ignoring gradient colors for now as our app doesnt have gradient colors anymore. If gradient color is set, library will take will take startColor of gradientColors for highlight. Yes, I tried making gradient color work. No, it is not easy.")
+//                    let cgColors = gradientColors.map{ $0.cgColor } as CFArray
+//                    let gradient = CGGradient(colorsSpace: CGColorSpaceCreateDeviceRGB(), colors: cgColors, locations: nil)
+//
+//                    let startPoint: CGPoint
+//                    let endPoint: CGPoint
+//
+//                    switch set.barHighlightGradientOrientation
+//                    {
+//                        case .vertical:
+//                            startPoint = CGPoint(x: barRect.midX, y: barRect.maxY)
+//                            endPoint = CGPoint(x: barRect.midX, y: barRect.minY)
+//
+//                        case .horizontal:
+//                            startPoint = CGPoint(x: barRect.minX, y: barRect.midY)
+//                            endPoint = CGPoint(x: barRect.maxX, y: barRect.midY)
+//                    }
+//
+//                    context.clip()
+//                    context.drawLinearGradient(gradient!, start: startPoint, end: endPoint, options: [])
                     
-                    let startPoint: CGPoint
-                    let endPoint: CGPoint
+                    let fillColor = gradientColors.first?.cgColor ?? set.highlightColor.cgColor
                     
-                    switch set.barHighlightGradientOrientation
-                    {
-                        case .vertical:
-                            startPoint = CGPoint(x: barRect.midX, y: barRect.maxY)
-                            endPoint = CGPoint(x: barRect.midX, y: barRect.minY)
-                        
-                        case .horizontal:
-                            startPoint = CGPoint(x: barRect.minX, y: barRect.midY)
-                            endPoint = CGPoint(x: barRect.maxX, y: barRect.midY)
-                    }
-                    
-                    context.clip()
-                    context.drawLinearGradient(gradient!, start: startPoint, end: endPoint, options: [])
+                    context.setFillColor(fillColor)
+                    context.fillPath()
                 }
                 else
                 {

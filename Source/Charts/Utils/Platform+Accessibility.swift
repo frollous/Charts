@@ -1,6 +1,7 @@
 import Foundation
 
-#if os(iOS) || os(tvOS)
+#if os(iOS) || os(tvOS) || os(watchOS)
+import UIKit
 
 internal func accessibilityPostLayoutChangedNotification(withElement element: Any? = nil)
 {
@@ -13,7 +14,7 @@ internal func accessibilityPostScreenChangedNotification(withElement element: An
 }
 
 /// A simple abstraction over UIAccessibilityElement and NSAccessibilityElement.
-open class NSUIAccessibilityElement: UIAccessibilityElement
+@objc open class NSUIAccessibilityElement: UIAccessibilityElement
 {
     private let containerView: UIView
 
@@ -82,7 +83,7 @@ extension NSUIView
     open override func index(ofAccessibilityElement element: Any) -> Int
     {
         guard let axElement = element as? NSUIAccessibilityElement else { return NSNotFound }
-        return (accessibilityChildren() as? [NSUIAccessibilityElement])?.index(of: axElement) ?? NSNotFound
+        return (accessibilityChildren() as? [NSUIAccessibilityElement])?.firstIndex(of: axElement) ?? NSNotFound
     }
 }
 
@@ -190,4 +191,4 @@ extension NSUIView: NSAccessibilityGroup
     }
 }
 
-#endif
+#endif  // #if os(iOS) || os(tvOS) || os(watchOS)

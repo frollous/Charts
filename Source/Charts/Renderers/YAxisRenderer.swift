@@ -11,7 +11,11 @@
 
 import Foundation
 import CoreGraphics
-
+#if os(iOS) || os(tvOS) || os(watchOS)
+import UIKit
+#else // macOS
+import AppKit
+#endif
 
 @objc(ChartYAxisRenderer)
 open class YAxisRenderer: NSObject, AxisRenderer
@@ -20,7 +24,9 @@ open class YAxisRenderer: NSObject, AxisRenderer
     public let axis: YAxis
     public let transformer: Transformer?
 
-    @objc public init(viewPortHandler: ViewPortHandler, axis: YAxis, transformer: Transformer?)
+    @objc public init(viewPortHandler: ViewPortHandler,
+                      axis: YAxis,
+                      transformer: Transformer?)
     {
         self.viewPortHandler = viewPortHandler
         self.axis = axis
@@ -246,7 +252,7 @@ open class YAxisRenderer: NSObject, AxisRenderer
     {
         guard let transformer = self.transformer else { return }
         
-        var limitLines = axis.limitLines
+        let limitLines = axis.limitLines
         
         guard !limitLines.isEmpty else { return }
 
@@ -331,7 +337,9 @@ open class YAxisRenderer: NSObject, AxisRenderer
         }
     }
 
-    @objc open func computeAxis(min: Double, max: Double, inverted: Bool)
+    @objc open func computeAxis(min: Double,
+                                max: Double,
+                                inverted: Bool)
     {
         var min = min, max = max
 
@@ -350,7 +358,8 @@ open class YAxisRenderer: NSObject, AxisRenderer
         computeAxisValues(min: min, max: max)
     }
 
-    @objc open func computeAxisValues(min: Double, max: Double)
+    @objc open func computeAxisValues(min: Double,
+                                      max: Double)
     {
         let yMin = min
         let yMax = max

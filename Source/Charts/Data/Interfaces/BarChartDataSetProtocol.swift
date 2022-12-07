@@ -11,6 +11,11 @@
 
 import Foundation
 import CoreGraphics
+#if os(iOS) || os(tvOS) || os(watchOS)
+import UIKit
+#else // macOS
+import AppKit
+#endif
 
 @objc
 public protocol BarChartDataSetProtocol: BarLineScatterCandleBubbleChartDataSetProtocol
