@@ -119,8 +119,7 @@ open class CombinedChartData: BarLineScatterCandleBubbleChartData
         {
             data.calcMinMax()
             
-            let sets = data.dataSets
-            _dataSets.append(contentsOf: sets)
+            _dataSets.append(contentsOf: data)
             
             if data.yMax > yMax
             {
@@ -142,35 +141,35 @@ open class CombinedChartData: BarLineScatterCandleBubbleChartData
                 xMin = data.xMin
             }
 
-            for dataset in sets
+            for set in data
             {
-                if dataset.axisDependency == .left
+                if set.axisDependency == .left
                 {
-                    if dataset.yMax > leftAxisMax
+                    if set.yMax > leftAxisMax
                     {
-                        leftAxisMax = dataset.yMax
+                        leftAxisMax = set.yMax
                     }
-                    if dataset.yMin < leftAxisMin
+                    if set.yMin < leftAxisMin
                     {
-                        leftAxisMin = dataset.yMin
+                        leftAxisMin = set.yMin
                     }
                 }
                 else
                 {
-                    if dataset.yMax > rightAxisMax
+                    if set.yMax > rightAxisMax
                     {
-                        rightAxisMax = dataset.yMax
+                        rightAxisMax = set.yMax
                     }
-                    if dataset.yMin < rightAxisMin
+                    if set.yMin < rightAxisMin
                     {
-                        rightAxisMin = dataset.yMin
+                        rightAxisMin = set.yMin
                     }
                 }
             }
         }
     }
     
-    /// - returns: All data objects in row: line-bar-scatter-candle-bubble if not null.
+    /// All data objects in row: line-bar-scatter-candle-bubble if not null.
     @objc open var allData: [ChartData]
     {
         var data = [ChartData]()
@@ -247,47 +246,38 @@ open class CombinedChartData: BarLineScatterCandleBubbleChartData
     
     /// Get the Entry for a corresponding highlight object
     ///
-    /// - parameter highlight:
-    /// - returns: The entry that is highlighted
+    /// - Parameters:
+    ///   - highlight:
+    /// - Returns: The entry that is highlighted
     @objc override open func entry(for highlight: Highlight) -> ChartDataEntry?
     {
-        if highlight.dataIndex >= allData.count
-        {
-            return nil
-        }
-        
-        let data = dataByIndex(highlight.dataIndex)
-        
-        if highlight.dataSetIndex >= data.endIndex
-        {
-            return nil
-        }
-        
         // The value of the highlighted entry could be NaN - if we are not interested in highlighting a specific value.
-        return data[highlight.dataSetIndex]
+        getDataSetByHighlight(highlight)?
             .entriesForXValue(highlight.x)
             .first { $0.y == highlight.y || highlight.y.isNaN }
     }
     
     /// Get dataset for highlight
     ///
-    /// - Parameter highlight: current highlight
+    /// - Parameters:
+    ///   - highlight: current highlight
     /// - Returns: dataset related to highlight
     @objc open func getDataSetByHighlight(_ highlight: Highlight) -> ChartDataSetProtocol!
-    {  
-        if highlight.dataIndex >= allData.count
+    {
+        guard allData.indices.contains(highlight.dataIndex) else
         {
             return nil
         }
-        
+
         let data = dataByIndex(highlight.dataIndex)
-        
-        if highlight.dataSetIndex >= data.endIndex
+
+        guard data.indices.contains(highlight.dataSetIndex) else
         {
             return nil
         }
-        
-        return data.dataSets[highlight.dataSetIndex]
+
+        // The value of the highlighted entry could be NaN - if we are not interested in highlighting a specific value.
+        return data[highlight.dataSetIndex]
     }
 
     // MARK: Unsupported Collection Methods

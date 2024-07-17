@@ -11,22 +11,15 @@
 
 import Foundation
 import CoreGraphics
-#if os(iOS) || os(tvOS) || os(watchOS)
-import UIKit
-#else // macOS
-import AppKit
-#endif
 
 @objc(ChartYAxisRenderer)
 open class YAxisRenderer: NSObject, AxisRenderer
 {
-    public let viewPortHandler: ViewPortHandler
-    public let axis: YAxis
-    public let transformer: Transformer?
+    @objc public let viewPortHandler: ViewPortHandler
+    @objc public let axis: YAxis
+    @objc public let transformer: Transformer?
 
-    @objc public init(viewPortHandler: ViewPortHandler,
-                      axis: YAxis,
-                      transformer: Transformer?)
+    @objc public init(viewPortHandler: ViewPortHandler, axis: YAxis, transformer: Transformer?)
     {
         self.viewPortHandler = viewPortHandler
         self.axis = axis
@@ -50,8 +43,8 @@ open class YAxisRenderer: NSObject, AxisRenderer
         let labelPosition = axis.labelPosition
         
         let xPos: CGFloat
-        let textAlign: NSTextAlignment
-        
+        let textAlign: TextAlignment
+
         if dependency == .left
         {
             if labelPosition == .outsideChart
@@ -124,24 +117,26 @@ open class YAxisRenderer: NSObject, AxisRenderer
     }
     
     /// draws the y-labels on the specified x-position
-    internal func drawYLabels(
+    open func drawYLabels(
         context: CGContext,
         fixedPosition: CGFloat,
         positions: [CGPoint],
         offset: CGFloat,
-        textAlign: NSTextAlignment)
+        textAlign: TextAlignment)
     {
         let labelFont = axis.labelFont
         let labelTextColor = axis.labelTextColor
         
         let from = axis.isDrawBottomYLabelEntryEnabled ? 0 : 1
         let to = axis.isDrawTopYLabelEntryEnabled ? axis.entryCount : (axis.entryCount - 1)
+
+        let xOffset = axis.labelXOffset
         
         for i in from..<to
         {
             let text = axis.getFormattedLabel(i)
             context.drawText(text,
-                             at: CGPoint(x: fixedPosition, y: positions[i].y + offset),
+                             at: CGPoint(x: fixedPosition + xOffset, y: positions[i].y + offset),
                              align: textAlign,
                              attributes: [.font: labelFont, .foregroundColor: labelTextColor])
         }
@@ -297,49 +292,53 @@ open class YAxisRenderer: NSObject, AxisRenderer
             let label = l.label
             
             // if drawing the limit-value label is enabled
-            guard l.drawLabelEnabled, !label.isEmpty else { return }
+            guard l.drawLabelEnabled, !label.isEmpty else { continue }
 
-            let labelLineHeight = l.valueFont.lineHeight
-
+            let labelLineSize = label.size(withAttributes: [.font: l.valueFont])
+            let labelLineRotatedSize = labelLineSize.rotatedBy(degrees: l.labelRotationAngle)
+            let labelLineRotatedWidth = labelLineRotatedSize.width
+            let labelLineRotatedHeight = labelLineRotatedSize.height
+            
             let xOffset = 4.0 + l.xOffset
-            let yOffset = l.lineWidth + labelLineHeight + l.yOffset
+            let yOffset = l.lineWidth + labelLineRotatedHeight + l.yOffset
+            let labelRotationAngleRadians = l.labelRotationAngle.DEG2RAD
 
-            let align: NSTextAlignment
             let point: CGPoint
+            let anchor = CGPoint(x: 0.0, y: 0.0)
 
             switch l.labelPosition
             {
             case .rightTop:
-                align = .right
-                point = CGPoint(x: viewPortHandler.contentRight - xOffset,
+                point = CGPoint(x: viewPortHandler.contentRight - labelLineRotatedWidth - xOffset,
                                 y: position.y - yOffset)
 
             case .rightBottom:
-                align = .right
-                point = CGPoint(x: viewPortHandler.contentRight - xOffset,
-                                y: position.y + yOffset - labelLineHeight)
+                point = CGPoint(x: viewPortHandler.contentRight - labelLineRotatedWidth - xOffset,
+                                y: position.y - labelLineRotatedHeight + yOffset)
 
             case .leftTop:
-                align = .left
                 point = CGPoint(x: viewPortHandler.contentLeft + xOffset,
                                 y: position.y - yOffset)
 
             case .leftBottom:
-                align = .left
                 point = CGPoint(x: viewPortHandler.contentLeft + xOffset,
-                                y: position.y + yOffset - labelLineHeight)
+                                y: position.y - labelLineRotatedHeight + yOffset)
             }
+
+            let attributes: [NSAttributedString.Key : Any] = [
+                .font: l.valueFont,
+                .foregroundColor: l.valueTextColor
+            ]
 
             context.drawText(label,
                              at: point,
-                             align: align,
-                             attributes: [.font: l.valueFont, .foregroundColor: l.valueTextColor])
+                             anchor: anchor,
+                             angleRadians: labelRotationAngleRadians,
+                             attributes: attributes)
         }
     }
 
-    @objc open func computeAxis(min: Double,
-                                max: Double,
-                                inverted: Bool)
+    @objc open func computeAxis(min: Double, max: Double, inverted: Bool)
     {
         var min = min, max = max
 
@@ -358,8 +357,7 @@ open class YAxisRenderer: NSObject, AxisRenderer
         computeAxisValues(min: min, max: max)
     }
 
-    @objc open func computeAxisValues(min: Double,
-                                      max: Double)
+    @objc open func computeAxisValues(min: Double, max: Double)
     {
         let yMin = min
         let yMax = max
@@ -436,7 +434,8 @@ open class YAxisRenderer: NSObject, AxisRenderer
             axis.entries.removeAll(keepingCapacity: true)
             axis.entries.reserveCapacity(labelCount)
 
-            let values = stride(from: first, to: Double(n) * interval + first, by: interval)
+            // Fix for IEEE negative zero case (Where value == -0.0, and 0.0 == -0.0)
+            let values = stride(from: first, to: Double(n) * interval + first, by: interval).map { $0 == 0.0 ? 0.0 : $0 }
             axis.entries.append(contentsOf: values)
         }
 

@@ -11,22 +11,15 @@
 
 import Foundation
 import CoreGraphics
-#if os(iOS) || os(tvOS) || os(watchOS)
-import UIKit
-#else // macOS
-import AppKit
-#endif
 
 @objc(ChartXAxisRenderer)
 open class XAxisRenderer: NSObject, AxisRenderer
 {
-    public let viewPortHandler: ViewPortHandler
-    public let axis: XAxis
-    public let transformer: Transformer?
+    @objc public let viewPortHandler: ViewPortHandler
+    @objc public let axis: XAxis
+    @objc public let transformer: Transformer?
 
-    @objc public init(viewPortHandler: ViewPortHandler,
-                      axis: XAxis,
-                      transformer: Transformer?)
+    @objc public init(viewPortHandler: ViewPortHandler, axis: XAxis, transformer: Transformer?)
     {
         self.viewPortHandler = viewPortHandler
         self.axis = axis
@@ -34,10 +27,8 @@ open class XAxisRenderer: NSObject, AxisRenderer
 
         super.init()
     }
-    
-    open func computeAxis(min: Double,
-                          max: Double,
-                          inverted: Bool)
+
+    open func computeAxis(min: Double, max: Double, inverted: Bool)
     {
         var min = min, max = max
         
@@ -56,9 +47,8 @@ open class XAxisRenderer: NSObject, AxisRenderer
         
         computeAxisValues(min: min, max: max)
     }
-    
-    open func computeAxisValues(min: Double,
-                                max: Double)
+
+    open func computeAxisValues(min: Double, max: Double)
     {
         let yMin = min
         let yMax = max
@@ -136,7 +126,9 @@ open class XAxisRenderer: NSObject, AxisRenderer
             axis.entries.reserveCapacity(labelCount)
 
             let start = first, end = first + Double(n) * interval
-            let values = stride(from: start, to: end, by: interval)
+
+            // Fix for IEEE negative zero case (Where value == -0.0, and 0.0 == -0.0)
+            let values = stride(from: start, to: end, by: interval).map { $0 == 0.0 ? 0.0 : $0 }
             axis.entries.append(contentsOf: values)
         }
 
@@ -257,8 +249,8 @@ open class XAxisRenderer: NSObject, AxisRenderer
                                anchor: CGPoint)
     {
         guard let transformer = self.transformer else { return }
-        
-        let paraStyle = NSParagraphStyle.default.mutableCopy() as! NSMutableParagraphStyle
+
+        let paraStyle = ParagraphStyle.default.mutableCopy() as! MutableParagraphStyle
         paraStyle.alignment = .center
         
         let labelAttrs: [NSAttributedString.Key : Any] = [.font: axis.labelFont,
@@ -395,7 +387,7 @@ open class XAxisRenderer: NSObject, AxisRenderer
                                  x: CGFloat,
                                  y: CGFloat)
     {
-        guard (viewPortHandler.offsetLeft...viewPortHandler.chartWidth).contains(x) else { return }
+        guard x >= viewPortHandler.offsetLeft && x <= viewPortHandler.chartWidth else { return }
 
         context.beginPath()
         context.move(to: CGPoint(x: x, y: viewPortHandler.contentTop))
@@ -405,17 +397,16 @@ open class XAxisRenderer: NSObject, AxisRenderer
     
     open func renderLimitLines(context: CGContext)
     {
-        guard let transformer = self.transformer else { return }
+        guard
+            let transformer = self.transformer,
+            !axis.limitLines.isEmpty
+            else { return }
         
-        let limitLines = axis.limitLines
-        
-        guard !limitLines.isEmpty else { return }
-
         let trans = transformer.valueToPixelMatrix
         
         var position = CGPoint.zero
-        
-        for l in limitLines where l.isEnabled
+
+        for l in axis.limitLines where l.isEnabled
         {
             context.saveGState()
             defer { context.restoreGState() }
@@ -466,40 +457,45 @@ open class XAxisRenderer: NSObject, AxisRenderer
         // if drawing the limit-value label is enabled
         guard limitLine.drawLabelEnabled, !label.isEmpty else { return }
 
-        let labelLineHeight = limitLine.valueFont.lineHeight
+        let labelLineSize = label.size(withAttributes: [.font: limitLine.valueFont])
+        let labelLineRotatedSize = labelLineSize.rotatedBy(degrees: limitLine.labelRotationAngle)
+        let labelLineRotatedWidth = labelLineRotatedSize.width
+        let labelLineRotatedHeight = labelLineRotatedSize.height
 
         let xOffset: CGFloat = limitLine.lineWidth + limitLine.xOffset
+        let labelRotationAngleRadians = limitLine.labelRotationAngle.DEG2RAD
 
-        let align: NSTextAlignment
         let point: CGPoint
+        let anchor = CGPoint(x: 0.0, y: 0.0)
 
-        switch limitLine.labelPosition
-        {
+        switch limitLine.labelPosition {
         case .rightTop:
-            align = .left
-            point = CGPoint(x: position.x + xOffset,
-                            y: viewPortHandler.contentTop + yOffset)
+            point = CGPoint(
+                x: position.x + xOffset,
+                y: viewPortHandler.contentTop + yOffset)
 
         case .rightBottom:
-            align = .left
             point = CGPoint(x: position.x + xOffset,
-                            y: viewPortHandler.contentBottom - labelLineHeight - yOffset)
+                            y: viewPortHandler.contentBottom - labelLineRotatedHeight - yOffset)
 
         case .leftTop:
-            align = .right
-            point = CGPoint(x: position.x - xOffset,
+            point = CGPoint(x: position.x - labelLineRotatedWidth - xOffset,
                             y: viewPortHandler.contentTop + yOffset)
 
         case .leftBottom:
-            align = .right
-            point = CGPoint(x: position.x - xOffset,
-                            y: viewPortHandler.contentBottom - labelLineHeight - yOffset)
+            point = CGPoint(x: position.x - labelLineRotatedWidth - xOffset,
+                            y: viewPortHandler.contentBottom - labelLineRotatedHeight - yOffset)
         }
+
+        let attributes: [NSAttributedString.Key : Any] = [
+            .font: limitLine.valueFont,
+            .foregroundColor: limitLine.valueTextColor
+        ]
 
         context.drawText(label,
                          at: point,
-                         align: align,
-                         attributes: [.font: limitLine.valueFont,
-                                      .foregroundColor: limitLine.valueTextColor])
+                         anchor: anchor,
+                         angleRadians: labelRotationAngleRadians,
+                         attributes: attributes)
     }
 }

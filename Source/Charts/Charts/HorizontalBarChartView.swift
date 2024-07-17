@@ -12,10 +12,6 @@
 import Foundation
 import CoreGraphics
 
-#if !os(OSX)
-    import UIKit
-#endif
-
 /// BarChart with horizontal bar orientation. In this implementation, x- and y-axis are switched.
 open class HorizontalBarChartView: BarChartView
 {
@@ -38,7 +34,7 @@ open class HorizontalBarChartView: BarChartView
     {
         guard
             legend.isEnabled,
-            legend.drawInside
+            !legend.drawInside
         else { return }
         
         // setup offsets for legend
@@ -207,7 +203,7 @@ open class HorizontalBarChartView: BarChartView
         return self.highlighter?.getHighlight(x: pt.y, y: pt.x)
     }
     
-    /// - returns: The lowest x-index (value on the x-axis) that is still visible on he chart.
+    /// The lowest x-index (value on the x-axis) that is still visible on he chart.
     open override var lowestVisibleX: Double
     {
         var pt = CGPoint(
@@ -219,7 +215,7 @@ open class HorizontalBarChartView: BarChartView
         return max(xAxis._axisMinimum, Double(pt.y))
     }
     
-    /// - returns: The highest x-index (value on the x-axis) that is still visible on the chart.
+    /// The highest x-index (value on the x-axis) that is still visible on the chart.
     open override var highestVisibleX: Double
     {
         var pt = CGPoint(

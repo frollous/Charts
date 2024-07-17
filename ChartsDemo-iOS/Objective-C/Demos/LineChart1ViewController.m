@@ -145,13 +145,13 @@
     if (_chartView.data.dataSetCount > 0)
     {
         set1 = (LineChartDataSet *)_chartView.data.dataSets[0];
-        set1.values = values;
+        [set1 replaceEntries: values];
         [_chartView.data notifyDataChanged];
         [_chartView notifyDataSetChanged];
     }
     else
     {
-        set1 = [[LineChartDataSet alloc] initWithValues:values label:@"DataSet 1"];
+        set1 = [[LineChartDataSet alloc] initWithEntries:values label:@"DataSet 1"];
         
         set1.drawIconsEnabled = NO;
         
@@ -174,7 +174,7 @@
         CGGradientRef gradient = CGGradientCreateWithColors(nil, (CFArrayRef)gradientColors, nil);
         
         set1.fillAlpha = 1.f;
-        set1.fill = [ChartFill fillWithLinearGradient:gradient angle:90.f];
+        set1.fill = [[ChartLinearGradientFill alloc] initWithGradient:gradient angle:90.0f];
         set1.drawFilledEnabled = YES;
         
         CGGradientRelease(gradient);

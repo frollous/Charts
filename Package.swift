@@ -3,20 +3,27 @@
 import PackageDescription
 
 let package = Package(
-    name: "Charts",
-    defaultLocalization: "en",
+    name: "DGCharts",
     platforms: [
-        .iOS(.v12),
-        .macOS(.v10_13),
-        .tvOS(.v10),
-        .watchOS(.v4)
+          .iOS(.v12),
+          .tvOS(.v12),
+          .macOS(.v10_12),
     ],
     products: [
-        .library(name: "Charts", targets: ["Charts"])
+        .library(
+            name: "DGCharts",
+            targets: ["DGCharts"]),
+        .library(
+            name: "DGChartsDynamic",
+            type: .dynamic,
+            targets: ["DGCharts"])
     ],
-    dependencies: [],
     targets: [
-        .target(name: "Charts", dependencies: [])
+        .target(
+            name: "DGCharts",
+            path: "Source/Charts",
+            resources: [.copy("PrivacyInfo.xcprivacy")]
+        )
     ],
     swiftLanguageVersions: [.v5]
 )

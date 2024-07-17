@@ -11,25 +11,15 @@
 
 import Foundation
 import CoreGraphics
-#if os(iOS) || os(tvOS) || os(watchOS)
-import UIKit
-#else // macOS
-import AppKit
-#endif
 
 open class XAxisRendererHorizontalBarChart: XAxisRenderer
 {
     internal weak var chart: BarChartView?
-    
-    @objc public init(viewPortHandler: ViewPortHandler,
-                      axis: XAxis,
-                      transformer: Transformer?,
-                      chart: BarChartView)
+
+    @objc public init(viewPortHandler: ViewPortHandler, axis: XAxis, transformer: Transformer?, chart: BarChartView)
     {
-        super.init(viewPortHandler: viewPortHandler,
-                   axis: axis,
-                   transformer: transformer)
-        
+        super.init(viewPortHandler: viewPortHandler, axis: axis, transformer: transformer)
+
         self.chart = chart
     }
     
@@ -163,9 +153,7 @@ open class XAxisRendererHorizontalBarChart: XAxisRenderer
         return contentRect
     }
 
-    open override func drawGridLine(context: CGContext,
-                                    x: CGFloat,
-                                    y: CGFloat)
+    open override func drawGridLine(context: CGContext, x: CGFloat, y: CGFloat)
     {
         guard viewPortHandler.isInBoundsY(y) else { return }
 
@@ -265,41 +253,48 @@ open class XAxisRendererHorizontalBarChart: XAxisRenderer
             // if drawing the limit-value label is enabled
             if l.drawLabelEnabled, !label.isEmpty
             {
-                let labelLineHeight = l.valueFont.lineHeight
-                
-                let xOffset = 4.0 + l.xOffset
-                let yOffset = l.lineWidth + labelLineHeight + l.yOffset
 
-                let align: NSTextAlignment
+                let labelLineSize = label.size(withAttributes: [.font: l.valueFont])
+                let labelLineRotatedSize = labelLineSize.rotatedBy(degrees: l.labelRotationAngle)
+                let labelLineRotatedWidth = labelLineRotatedSize.width
+                let labelLineRotatedHeight = labelLineRotatedSize.height
+
+                let xOffset = 4.0 + l.xOffset
+                let yOffset = l.lineWidth + labelLineRotatedHeight + l.yOffset
+                let labelRotationAngleRadians = l.labelRotationAngle.DEG2RAD
+
                 let point: CGPoint
+                let anchor = CGPoint(x: 0.0, y: 0.0)
 
                 switch l.labelPosition
                 {
                 case .rightTop:
-                    align = .right
-                    point = CGPoint(x: viewPortHandler.contentRight - xOffset,
+                    point = CGPoint(x: viewPortHandler.contentRight - labelLineRotatedWidth - xOffset,
                                     y: position.y - yOffset)
 
                 case .rightBottom:
-                    align = .right
-                    point = CGPoint(x: viewPortHandler.contentRight - xOffset,
-                                    y: position.y + yOffset - labelLineHeight)
+                    point = CGPoint(x: viewPortHandler.contentRight - labelLineRotatedWidth - xOffset,
+                                    y: position.y - labelLineRotatedHeight + yOffset)
 
                 case .leftTop:
-                    align = .left
                     point = CGPoint(x: viewPortHandler.contentLeft + xOffset,
                                     y: position.y - yOffset)
 
                 case .leftBottom:
-                    align = .left
                     point = CGPoint(x: viewPortHandler.contentLeft + xOffset,
-                                    y: position.y + yOffset - labelLineHeight)
+                                    y: position.y - labelLineRotatedHeight + yOffset)
                 }
+
+                let attributes: [NSAttributedString.Key : Any] = [
+                    .font: l.valueFont,
+                    .foregroundColor: l.valueTextColor
+                ]
 
                 context.drawText(label,
                                  at: point,
-                                 align: align,
-                                 attributes: [.font: l.valueFont, .foregroundColor: l.valueTextColor])
+                                 anchor: anchor,
+                                 angleRadians: labelRotationAngleRadians,
+                                 attributes: attributes)
             }
         }
     }

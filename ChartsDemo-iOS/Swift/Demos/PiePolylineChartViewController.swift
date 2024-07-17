@@ -7,7 +7,7 @@
 //
 
 import UIKit
-import Charts
+import DGCharts
 
 class PiePolylineChartViewController: DemoBaseViewController {
 
@@ -66,7 +66,7 @@ class PiePolylineChartViewController: DemoBaseViewController {
                                      label: parties[i % parties.count])
         }
         
-        let set = PieChartDataSet(values: entries, label: "Election Results")
+        let set = PieChartDataSet(entries: entries, label: "Election Results")
         set.sliceSpace = 2
         
         

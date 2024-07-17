@@ -6,8 +6,10 @@
 //  Copyright © 2017 jc. All rights reserved.
 //
 
-import UIKit
-import Charts
+#if canImport(UIKit)
+    import UIKit
+#endif
+import DGCharts
 
 private class CubicLineSampleFillFormatter: FillFormatter {
     func getFillLinePosition(dataSet: LineChartDataSetProtocol, dataProvider: LineChartDataProvider) -> CGFloat {
@@ -89,7 +91,7 @@ class CubicLineChartViewController: DemoBaseViewController {
             return ChartDataEntry(x: Double(i), y: val)
         }
 
-        let set1 = LineChartDataSet(values: yVals1, label: "DataSet 1")
+        let set1 = LineChartDataSet(entries: yVals1, label: "DataSet 1")
         set1.mode = .cubicBezier
         set1.drawCirclesEnabled = false
         set1.lineWidth = 1.8

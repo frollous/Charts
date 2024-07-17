@@ -12,10 +12,6 @@
 import Foundation
 import CoreGraphics
 
-#if !os(OSX)
-    import UIKit
-#endif
-
 @objc(ChartLegendRenderer)
 open class LegendRenderer: NSObject, Renderer
 {
@@ -58,10 +54,13 @@ open class LegendRenderer: NSObject, Renderer
                     for j in 0..<minEntries
                     {
                         let label: String?
-                        if (sLabels.count > 0 && minEntries > 0) {
+                        if !sLabels.isEmpty && minEntries > 0
+                        {
                             let labelIndex = j % minEntries
                             label = sLabels.indices.contains(labelIndex) ? sLabels[labelIndex] : nil
-                        } else {
+                        }
+                        else
+                        {
                             label = nil
                         }
 
@@ -296,13 +295,13 @@ open class LegendRenderer: NSObject, Renderer
             
             var lineIndex: Int = 0
             
-            for i in 0 ..< entries.count
+            for i in entries.indices
             {
                 let e = entries[i]
                 let drawingForm = e.form != .none
                 let formSize = e.formSize.isNaN ? defaultFormSize : e.formSize
                 
-                if i < calculatedLabelBreakPoints.count &&
+                if i < calculatedLabelBreakPoints.endIndex &&
                     calculatedLabelBreakPoints[i]
                 {
                     posX = originPosX
@@ -311,7 +310,7 @@ open class LegendRenderer: NSObject, Renderer
                 
                 if posX == originPosX &&
                     horizontalAlignment == .center &&
-                    lineIndex < calculatedLineSizes.count
+                    lineIndex < calculatedLineSizes.endIndex
                 {
                     posX += (direction == .rightToLeft
                         ? calculatedLineSizes[lineIndex].width
@@ -401,7 +400,7 @@ open class LegendRenderer: NSObject, Renderer
                 posY = viewPortHandler.chartHeight / 2.0 - legend.neededHeight / 2.0 + legend.yOffset
             }
             
-            for i in 0 ..< entries.count
+            for i in entries.indices
             {
                 let e = entries[i]
                 let drawingForm = e.form != .none
@@ -527,7 +526,7 @@ open class LegendRenderer: NSObject, Renderer
             
             context.setLineWidth(formLineWidth)
             
-            if formLineDashLengths != nil && formLineDashLengths!.count > 0
+            if formLineDashLengths != nil && !formLineDashLengths!.isEmpty
             {
                 context.setLineDash(phase: formLineDashPhase, lengths: formLineDashLengths!)
             }

@@ -6,17 +6,16 @@
 //  Copyright © 2017 jc. All rights reserved.
 //
 
-import UIKit
-import Charts
+#if canImport(UIKit)
+    import UIKit
+#endif
+import DGCharts
 
 class RadarChartViewController: DemoBaseViewController {
 
     @IBOutlet var chartView: RadarChartView!
     
     let activities = ["Burger", "Steak", "Salad", "Pasta", "Pizza"]
-    var originalBarBgColor: UIColor!
-    var originalBarTintColor: UIColor!
-    var originalBarStyle: UIBarStyle!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -80,32 +79,6 @@ class RadarChartViewController: DemoBaseViewController {
         chartView.animate(xAxisDuration: 1.4, yAxisDuration: 1.4, easingOption: .easeOutBack)
     }
 
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        
-        UIView.animate(withDuration: 0.15) {
-            let navBar = self.navigationController!.navigationBar
-            self.originalBarBgColor = navBar.barTintColor
-            self.originalBarTintColor = navBar.tintColor
-            self.originalBarStyle = navBar.barStyle
-
-            navBar.barTintColor = self.view.backgroundColor
-            navBar.tintColor = .white
-            navBar.barStyle = .black
-        }
-    }
-    
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-        
-        UIView.animate(withDuration: 0.15) {
-            let navBar = self.navigationController!.navigationBar
-            navBar.barTintColor = self.originalBarBgColor
-            navBar.tintColor = self.originalBarTintColor
-            navBar.barStyle = self.originalBarStyle
-        }
-    }
-    
     override func updateChartData() {
         if self.shouldHideData {
             chartView.data = nil
@@ -124,7 +97,7 @@ class RadarChartViewController: DemoBaseViewController {
         let entries1 = (0..<cnt).map(block)
         let entries2 = (0..<cnt).map(block)
         
-        let set1 = RadarChartDataSet(values: entries1, label: "Last Week")
+        let set1 = RadarChartDataSet(entries: entries1, label: "Last Week")
         set1.setColor(UIColor(red: 103/255, green: 110/255, blue: 129/255, alpha: 1))
         set1.fillColor = UIColor(red: 103/255, green: 110/255, blue: 129/255, alpha: 1)
         set1.drawFilledEnabled = true
@@ -133,7 +106,7 @@ class RadarChartViewController: DemoBaseViewController {
         set1.drawHighlightCircleEnabled = true
         set1.setDrawHighlightIndicators(false)
         
-        let set2 = RadarChartDataSet(values: entries2, label: "This Week")
+        let set2 = RadarChartDataSet(entries: entries2, label: "This Week")
         set2.setColor(UIColor(red: 121/255, green: 162/255, blue: 175/255, alpha: 1))
         set2.fillColor = UIColor(red: 121/255, green: 162/255, blue: 175/255, alpha: 1)
         set2.drawFilledEnabled = true

@@ -10,7 +10,10 @@
 //
 
 import Foundation
-import Charts
+import DGCharts
+#if canImport(UIKit)
+    import UIKit
+#endif
 
 public class RadarMarkerView: MarkerView {
     @IBOutlet var label: UILabel!

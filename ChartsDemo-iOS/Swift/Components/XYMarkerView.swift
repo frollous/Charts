@@ -7,7 +7,10 @@
 //
 
 import Foundation
-import Charts
+import DGCharts
+#if canImport(UIKit)
+    import UIKit
+#endif
 
 public class XYMarkerView: BalloonMarker {
     public var xAxisValueFormatter: AxisValueFormatter

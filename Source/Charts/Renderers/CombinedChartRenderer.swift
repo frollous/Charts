@@ -59,35 +59,30 @@ open class CombinedChartRenderer: NSObject, DataRenderer
                 {
                     _renderers.append(BarChartRenderer(dataProvider: chart, animator: animator, viewPortHandler: viewPortHandler))
                 }
-                break
-                
+
             case .line:
                 if chart.lineData !== nil
                 {
                     _renderers.append(LineChartRenderer(dataProvider: chart, animator: animator, viewPortHandler: viewPortHandler))
                 }
-                break
-                
+
             case .candle:
                 if chart.candleData !== nil
                 {
                     _renderers.append(CandleStickChartRenderer(dataProvider: chart, animator: animator, viewPortHandler: viewPortHandler))
                 }
-                break
-                
+
             case .scatter:
                 if chart.scatterData !== nil
                 {
                     _renderers.append(ScatterChartRenderer(dataProvider: chart, animator: animator, viewPortHandler: viewPortHandler))
                 }
-                break
-                
+
             case .bubble:
                 if chart.bubbleData !== nil
                 {
                     _renderers.append(BubbleChartRenderer(dataProvider: chart, animator: animator, viewPortHandler: viewPortHandler))
                 }
-                break
             }
         }
 
@@ -95,10 +90,7 @@ open class CombinedChartRenderer: NSObject, DataRenderer
     
     open func initBuffers()
     {
-        for renderer in _renderers
-        {
-            renderer.initBuffers()
-        }
+        _renderers.forEach { $0.initBuffers() }
     }
     
     open func drawData(context: CGContext)
@@ -119,26 +111,17 @@ open class CombinedChartRenderer: NSObject, DataRenderer
         // TODO: Due to the potential complexity of data presented in Combined charts, a more usable way
         // for VO accessibility would be to use axis based traversal rather than by dataset.
         // Hence, accessibleChartElements is not populated below. (Individual renderers guard against dataSource being their respective views)
-        for renderer in _renderers
-        {
-            renderer.drawData(context: context)
-        }
+        _renderers.forEach { $0.drawData(context: context) }
     }
     
     open func drawValues(context: CGContext)
     {
-        for renderer in _renderers
-        {
-            renderer.drawValues(context: context)
-        }
+        _renderers.forEach { $0.drawValues(context: context) }
     }
     
     open func drawExtras(context: CGContext)
     {
-        for renderer in _renderers
-        {
-            renderer.drawExtras(context: context)
-        }
+        _renderers.forEach { $0.drawExtras(context: context) }
     }
     
     open func drawHighlighted(context: CGContext, indices: [Highlight])
@@ -182,20 +165,7 @@ open class CombinedChartRenderer: NSObject, DataRenderer
         return data.entryCount < Int(CGFloat(dataProvider?.maxVisibleCount ?? 0) * viewPortHandler.scaleX)
     }
 
-    /// - returns: The sub-renderer object at the specified index.
-    @objc open func getSubRenderer(index: Int) -> DataRenderer?
-    {
-        if index >= _renderers.count || index < 0
-        {
-            return nil
-        }
-        else
-        {
-            return _renderers[index]
-        }
-    }
-
-    /// - returns: All sub-renderers.
+    /// All sub-renderers.
     @objc open var subRenderers: [DataRenderer]
     {
         get { return _renderers }
@@ -204,10 +174,10 @@ open class CombinedChartRenderer: NSObject, DataRenderer
     
     // MARK: Accessors
     
-    /// - returns: `true` if drawing values above bars is enabled, `false` ifnot
+    /// `true` if drawing values above bars is enabled, `false` ifnot
     @objc open var isDrawValueAboveBarEnabled: Bool { return drawValueAboveBarEnabled }
     
-    /// - returns: `true` if drawing shadows (maxvalue) for each bar is enabled, `false` ifnot
+    /// `true` if drawing shadows (maxvalue) for each bar is enabled, `false` ifnot
     @objc open var isDrawBarShadowEnabled: Bool { return drawBarShadowEnabled }
     
     /// the order in which the provided data objects should be drawn.
@@ -215,13 +185,10 @@ open class CombinedChartRenderer: NSObject, DataRenderer
     /// e.g. if you provide [DrawOrder.Bar, DrawOrder.Line], the bars will be drawn behind the lines.
     open var drawOrder: [CombinedChartView.DrawOrder]
     {
-        get
-        {
-            return _drawOrder
-        }
+        get { _drawOrder }
         set
         {
-            if newValue.count > 0
+            if !newValue.isEmpty
             {
                 _drawOrder = newValue
             }

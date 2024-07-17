@@ -47,7 +47,7 @@ open class YAxisRendererRadarChart: YAxisRenderer
         // This is used to avoid repeated values when rounding values for display.
         if axis.isGranularityEnabled
         {
-            interval = Swift.max(interval, axis.granularity)
+            interval = max(interval, axis.granularity)
         }
         
         // Normalize interval
@@ -102,7 +102,8 @@ open class YAxisRendererRadarChart: YAxisRenderer
             axis.entries.removeAll(keepingCapacity: true)
             axis.entries.reserveCapacity(labelCount)
 
-            let values = stride(from: first, to: Double(n) * interval + first, by: interval)
+            // Fix for IEEE negative zero case (Where value == -0.0, and 0.0 == -0.0)
+            let values = stride(from: first, to: Double(n) * interval + first, by: interval).map { $0 == 0.0 ? 0.0 : $0 }
             axis.entries.append(contentsOf: values)
         }
         
@@ -150,7 +151,7 @@ open class YAxisRendererRadarChart: YAxisRenderer
         let xOffset = axis.labelXOffset
 
         let entries = axis.entries[from..<to]
-        zip(entries.indices, entries).forEach { index, entry in
+        entries.indexed().forEach { index, entry in
             let r = CGFloat(entry - axis._axisMinimum) * factor
             let p = center.moving(distance: r, atAngle: chart.rotationAngle)
             let label = axis.getFormattedLabel(index)

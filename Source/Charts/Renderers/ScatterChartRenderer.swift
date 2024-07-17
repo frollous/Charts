@@ -12,11 +12,6 @@
 import Foundation
 import CoreGraphics
 
-#if !os(OSX)
-    import UIKit
-#endif
-
-
 open class ScatterChartRenderer: LineScatterCandleRadarRenderer
 {
     @objc open weak var dataProvider: ScatterChartDataProvider?
@@ -46,17 +41,13 @@ open class ScatterChartRenderer: LineScatterCandleRadarRenderer
         // TODO: Due to the potential complexity of data presented in Scatter charts, a more usable way
         // for VO accessibility would be to use axis based traversal rather than by dataset.
         // Hence, accessibleChartElements is not populated below. (Individual renderers guard against dataSource being their respective views)
-        for i in scatterData.indices
-        {
-            guard let set = scatterData[i] as? ScatterChartDataSetProtocol else
-            {
-                fatalError("Datasets for ScatterChartRenderer must conform to ScatterChartDataSetProtocol")
-            }
-
-            guard set.isVisible else { continue }
-
-            drawDataSet(context: context, dataSet: set)
-        }
+        let sets = scatterData.dataSets as? [ScatterChartDataSet]
+        assert(sets != nil, "Datasets for ScatterChartRenderer must conform to IScatterChartDataSet")
+        
+        let drawDataSet = { self.drawDataSet(context: context, dataSet: $0) }
+        sets!.lazy
+            .filter(\.isVisible)
+            .forEach(drawDataSet)
     }
     
     private var _lineSegments = [CGPoint](repeating: CGPoint(), count: 2)
@@ -118,21 +109,16 @@ open class ScatterChartRenderer: LineScatterCandleRadarRenderer
         
         // if values are drawn
         if isDrawingValuesAllowed(dataProvider: dataProvider)
-        {
-            guard let dataSets = scatterData.dataSets as? [ScatterChartDataSetProtocol] else { return }
-            
+        {            
             let phaseY = animator.phaseY
             
             var pt = CGPoint()
             
             for i in scatterData.indices
             {
-                let dataSet = dataSets[i]
-                
-                if !shouldDrawValues(forDataSet: dataSet)
-                {
-                    continue
-                }
+                guard let dataSet = scatterData[i] as? ScatterChartDataSetProtocol,
+                      shouldDrawValues(forDataSet: dataSet)
+                    else { continue }
                 
                 let valueFont = dataSet.valueFont
                 
@@ -150,7 +136,7 @@ open class ScatterChartRenderer: LineScatterCandleRadarRenderer
                 
                 _xBounds.set(chart: dataProvider, dataSet: dataSet, animator: animator)
                 
-                for j in stride(from: _xBounds.min, through: _xBounds.range + _xBounds.min, by: 1)
+                for j in _xBounds
                 {
                     guard let e = dataSet.entryForIndex(j) else { break }
                     

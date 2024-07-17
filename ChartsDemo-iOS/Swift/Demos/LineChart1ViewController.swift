@@ -7,7 +7,7 @@
 //
 
 import UIKit
-import Charts
+import DGCharts
 
 class LineChart1ViewController: DemoBaseViewController {
 
@@ -114,16 +114,18 @@ class LineChart1ViewController: DemoBaseViewController {
             return ChartDataEntry(x: Double(i), y: val, icon: #imageLiteral(resourceName: "icon"))
         }
 
-        let set1 = LineChartDataSet(values: values, label: "DataSet 1")
+        let set1 = LineChartDataSet(entries: values, label: "DataSet 1")
         set1.drawIconsEnabled = false
         setup(set1)
 
+        let value = ChartDataEntry(x: Double(3), y: 3)
+        set1.addEntryOrdered(value)
         let gradientColors = [ChartColorTemplates.colorFromString("#00ff0000").cgColor,
                               ChartColorTemplates.colorFromString("#ffff0000").cgColor]
         let gradient = CGGradient(colorsSpace: nil, colors: gradientColors as CFArray, locations: nil)!
 
         set1.fillAlpha = 1
-        set1.fill = Fill(linearGradient: gradient, angle: 90) //.linearGradient(gradient, angle: 90)
+        set1.fill = LinearGradientFill(gradient: gradient, angle: 90)
         set1.drawFilledEnabled = true
 
         let data = LineChartData(dataSet: set1)

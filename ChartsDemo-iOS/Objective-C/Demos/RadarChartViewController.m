@@ -16,9 +16,6 @@
 
 @property (nonatomic, strong) IBOutlet RadarChartView *chartView;
 @property (nonatomic, strong) NSArray<NSString *> *activities;
-@property (nonatomic, strong) UIColor *originalBarBgColor;
-@property (nonatomic, strong) UIColor *originalBarTintColor;
-@property (nonatomic) UIBarStyle originalBarStyle;
 
 @end
 
@@ -90,34 +87,6 @@
     [_chartView animateWithXAxisDuration:1.4 yAxisDuration:1.4 easingOption:ChartEasingOptionEaseOutBack];
 }
 
-- (void)viewWillAppear:(BOOL)animated
-{
-    [super viewWillAppear:animated];
-    
-    [UIView animateWithDuration:0.15 animations:^{
-        UINavigationBar *navigationBar = self.navigationController.navigationBar;
-        self.originalBarBgColor = navigationBar.barTintColor;
-        self.originalBarTintColor = navigationBar.tintColor;
-        self.originalBarStyle = navigationBar.barStyle;
-        
-        navigationBar.barTintColor = self.view.backgroundColor;
-        navigationBar.tintColor = UIColor.whiteColor;
-        navigationBar.barStyle = UIBarStyleBlack;
-    }];
-}
-
-- (void)viewWillDisappear:(BOOL)animated
-{
-    [super viewWillDisappear:animated];
-    
-    [UIView animateWithDuration:0.15 animations:^{
-        UINavigationBar *navigationBar = self.navigationController.navigationBar;
-        navigationBar.barTintColor = self.originalBarBgColor;
-        navigationBar.tintColor = self.originalBarTintColor;
-        navigationBar.barStyle = self.originalBarStyle;
-    }];
-}
-
 - (void)didReceiveMemoryWarning
 {
     [super didReceiveMemoryWarning];
@@ -151,7 +120,7 @@
         [entries2 addObject:[[RadarChartDataEntry alloc] initWithValue:(arc4random_uniform(mult) + min)]];
     }
     
-    RadarChartDataSet *set1 = [[RadarChartDataSet alloc] initWithValues:entries1 label:@"Last Week"];
+    RadarChartDataSet *set1 = [[RadarChartDataSet alloc] initWithEntries:entries1 label:@"Last Week"];
     [set1 setColor:[UIColor colorWithRed:103/255.0 green:110/255.0 blue:129/255.0 alpha:1.0]];
     set1.fillColor = [UIColor colorWithRed:103/255.0 green:110/255.0 blue:129/255.0 alpha:1.0];
     set1.drawFilledEnabled = YES;
@@ -160,7 +129,7 @@
     set1.drawHighlightCircleEnabled = YES;
     [set1 setDrawHighlightIndicators:NO];
 
-    RadarChartDataSet *set2 = [[RadarChartDataSet alloc] initWithValues:entries2 label:@"This Week"];
+    RadarChartDataSet *set2 = [[RadarChartDataSet alloc] initWithEntries:entries2 label:@"This Week"];
     [set2 setColor:[UIColor colorWithRed:121/255.0 green:162/255.0 blue:175/255.0 alpha:1.0]];
     set2.fillColor = [UIColor colorWithRed:121/255.0 green:162/255.0 blue:175/255.0 alpha:1.0];
     set2.drawFilledEnabled = YES;

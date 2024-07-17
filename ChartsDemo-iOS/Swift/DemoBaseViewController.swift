@@ -6,8 +6,10 @@
 //  Copyright © 2017 jc. All rights reserved.
 //
 
-import UIKit
-import Charts
+#if canImport(UIKit)
+    import UIKit
+#endif
+import DGCharts
 
 enum Option {
     case toggleValues
@@ -340,10 +342,10 @@ extension DemoBaseViewController: UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         if optionsTableView != nil {
-            return 40.0;
+            return 40.0
         }
         
-        return 44.0;
+        return 44.0
     }
     
     @available(iOS 2.0, *)
@@ -364,10 +366,8 @@ extension DemoBaseViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         if optionsTableView != nil {
             tableView.deselectRow(at: indexPath, animated: true)
-            
             optionsTableView?.removeFromSuperview()
             self.optionsTableView = nil
-            
             self.optionTapped(self.options[indexPath.row])
         }
         

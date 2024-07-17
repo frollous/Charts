@@ -12,11 +12,6 @@
 import Foundation
 import CoreGraphics
 
-#if !os(OSX)
-    import UIKit
-#endif
-
-
 open class BubbleChartRenderer: BarLineScatterCandleBubbleRenderer
 {
     /// A nested array of elements ordered logically (i.e not in visual/drawing order) for use with VoiceOver.
@@ -50,7 +45,8 @@ open class BubbleChartRenderer: BarLineScatterCandleBubbleRenderer
             accessibleChartElements.append(element)
         }
 
-        for (i, set) in (bubbleData.dataSets as! [BubbleChartDataSetProtocol]).enumerated() where set.isVisible
+        let sets = bubbleData.dataSets as! [BubbleChartDataSet]
+        for case let (i, set) in zip(sets.indices, sets) where set.isVisible
         {
             drawDataSet(context: context, dataSet: set, dataSetIndex: i)
         }
@@ -105,7 +101,7 @@ open class BubbleChartRenderer: BarLineScatterCandleBubbleRenderer
         let maxBubbleHeight: CGFloat = abs(viewPortHandler.contentBottom - viewPortHandler.contentTop)
         let referenceSize: CGFloat = min(maxBubbleHeight, maxBubbleWidth)
         
-        for j in stride(from: _xBounds.min, through: _xBounds.range + _xBounds.min, by: 1)
+        for j in _xBounds
         {
             guard let entry = dataSet.entryForIndex(j) as? BubbleChartDataEntry else { continue }
             
@@ -158,8 +154,7 @@ open class BubbleChartRenderer: BarLineScatterCandleBubbleRenderer
         guard let
             dataProvider = dataProvider,
             let bubbleData = dataProvider.bubbleData,
-            isDrawingValuesAllowed(dataProvider: dataProvider),
-            let dataSets = bubbleData.dataSets as? [BubbleChartDataSetProtocol]
+            isDrawingValuesAllowed(dataProvider: dataProvider)
             else { return }
 
         let phaseX = max(0.0, min(1.0, animator.phaseX))
@@ -167,11 +162,14 @@ open class BubbleChartRenderer: BarLineScatterCandleBubbleRenderer
 
         var pt = CGPoint()
 
-        for i in 0..<dataSets.count
+        for i in bubbleData.indices
         {
-            let dataSet = dataSets[i]
-
-            guard shouldDrawValues(forDataSet: dataSet) else { continue }
+            guard let dataSet = bubbleData[i] as? BubbleChartDataSetProtocol,
+                  shouldDrawValues(forDataSet: dataSet)
+            else
+            {
+                continue
+            }
 
             let formatter = dataSet.valueFormatter
             let alpha = phaseX == 1 ? phaseY : phaseX
@@ -185,7 +183,7 @@ open class BubbleChartRenderer: BarLineScatterCandleBubbleRenderer
             
             let angleRadians = dataSet.valueLabelAngle.DEG2RAD
 
-            for j in _xBounds.min..._xBounds.range + _xBounds.min
+            for j in _xBounds
             {
                 guard let e = dataSet.entryForIndex(j) as? BubbleChartDataEntry else { break }
 

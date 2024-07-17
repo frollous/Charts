@@ -34,7 +34,8 @@ public protocol DataRenderer: Renderer
 
     /// Draws all highlight indicators for the values that are currently highlighted.
     ///
-    /// - parameter indices: the highlighted values
+    /// - Parameters:
+    ///   - indices: the highlighted values
     func drawHighlighted(context: CGContext, indices: [Highlight])
 
     /// An opportunity for initializing internal buffers used for rendering with a new size.
@@ -61,13 +62,11 @@ internal struct AccessibleHeader {
                                 withDefaultDescription defaultDescription: String = "Chart") -> NSUIAccessibilityElement
     {
         let chartDescriptionText = chart.chartDescription.text ?? defaultDescription
-        let dataSetDescriptions = data.dataSets.map { $0.label ?? "" }
+        let dataSetDescriptions = data.map { $0.label ?? "" }
         let dataSetDescriptionText = dataSetDescriptions.joined(separator: ", ")
-        let dataSetCount = data.dataSets.count
-        
-        let
-        element = NSUIAccessibilityElement(accessibilityContainer: chart)
-        element.accessibilityLabel = chartDescriptionText + ". \(dataSetCount) dataset\(dataSetCount == 1 ? "" : "s"). \(dataSetDescriptionText)"
+
+        let element = NSUIAccessibilityElement(accessibilityContainer: chart)
+        element.accessibilityLabel = chartDescriptionText + ". \(data.count) dataset\(data.count == 1 ? "" : "s"). \(dataSetDescriptionText)"
         element.accessibilityFrame = chart.bounds
         element.isHeader = true
         

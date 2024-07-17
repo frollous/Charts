@@ -51,7 +51,7 @@ open class HorizontalBarChartRenderer: BarChartRenderer
             
             for i in barData.indices
             {
-                let set = barData.dataSets[i] as! BarChartDataSetProtocol
+                let set = barData[i] as! BarChartDataSetProtocol
                 let size = set.entryCount * (set.isStacked ? set.stackSize : 1)
                 if _buffers[i].rects.count != size
                 {
@@ -129,7 +129,7 @@ open class HorizontalBarChartRenderer: BarChartRenderer
                 var yStart = 0.0
                 
                 // fill the stack
-                for k in 0 ..< vals!.count
+                for k in vals!.indices
                 {
                     let value = vals![k]
                     
@@ -245,7 +245,7 @@ open class HorizontalBarChartRenderer: BarChartRenderer
         let isStacked = dataSet.isStacked
         let stackSize = isStacked ? dataSet.stackSize : 1
 
-        for j in stride(from: 0, to: buffer.rects.count, by: 1)
+        for j in buffer.rects.indices
         {
             let barRect = buffer.rects[j]
             
@@ -325,11 +325,9 @@ open class HorizontalBarChartRenderer: BarChartRenderer
                 let dataProvider = dataProvider,
                 let barData = dataProvider.barData
                 else { return }
-            
-            let dataSets = barData.dataSets
-            
-            let textAlign = NSTextAlignment.left
-            
+
+            let textAlign = TextAlignment.left
+
             let valueOffsetPlus: CGFloat = 5.0
             var posOffset: CGFloat
             var negOffset: CGFloat
@@ -337,14 +335,12 @@ open class HorizontalBarChartRenderer: BarChartRenderer
             
             for dataSetIndex in barData.indices
             {
-                guard let dataSet = dataSets[dataSetIndex] as? BarChartDataSetProtocol else { continue }
-                
+                guard let
+                    dataSet = barData[dataSetIndex] as? BarChartDataSetProtocol,
+                    shouldDrawValues(forDataSet: dataSet)
+                    else { continue }
+
                 let angleRadians = dataSet.valueLabelAngle.DEG2RAD
-                
-                if !shouldDrawValues(forDataSet: dataSet) || !(dataSet.isDrawIconsEnabled && dataSet.isVisible)
-                {
-                    continue
-                }
                 
                 let isInverted = dataProvider.isInverted(axis: dataSet.axisDependency)
                 
@@ -397,7 +393,7 @@ open class HorizontalBarChartRenderer: BarChartRenderer
                         // calculate the correct offset depending on the draw position of the value
                         let valueTextWidth = valueText.size(withAttributes: [.font: valueFont]).width
                         posOffset = (drawValueAboveBar ? valueOffsetPlus : -(valueTextWidth + valueOffsetPlus))
-                        negOffset = (drawValueAboveBar ? -(valueTextWidth + valueOffsetPlus) : valueOffsetPlus)
+                        negOffset = (drawValueAboveBar ? -(valueTextWidth + valueOffsetPlus) : valueOffsetPlus) - rect.size.width
                         
                         if isInverted
                         {
@@ -410,8 +406,6 @@ open class HorizontalBarChartRenderer: BarChartRenderer
                             drawValue(
                                 context: context,
                                 value: valueText,
-                                x: e.x,
-                                y: e.y,
                                 xPos: (rect.origin.x + rect.size.width)
                                     + (val >= 0.0 ? posOffset : negOffset),
                                 yPos: y + yOffset,
@@ -492,8 +486,6 @@ open class HorizontalBarChartRenderer: BarChartRenderer
                                 drawValue(
                                     context: context,
                                     value: valueText,
-                                    x: e.x,
-                                    y: e.y,
                                     xPos: (rect.origin.x + rect.size.width)
                                         + (val >= 0.0 ? posOffset : negOffset),
                                     yPos: rect.origin.y + yOffset,
@@ -526,7 +518,7 @@ open class HorizontalBarChartRenderer: BarChartRenderer
                             var posY = 0.0
                             var negY = -e.negativeSum
                             
-                            for k in 0 ..< vals.count
+                            for k in vals.indices
                             {
                                 let value = vals[k]
                                 var y: Double
@@ -552,7 +544,7 @@ open class HorizontalBarChartRenderer: BarChartRenderer
                             
                             trans.pointValuesToPixel(&transformed)
                             
-                            for k in 0 ..< transformed.count
+                            for k in transformed.indices
                             {
                                 let val = vals[k]
                                 let valueText = formatter.stringForValue(
@@ -596,8 +588,6 @@ open class HorizontalBarChartRenderer: BarChartRenderer
                                 {
                                     drawValue(context: context,
                                               value: valueText,
-                                              x: e.x,
-                                              y: e.y,
                                               xPos: x,
                                               yPos: y + yOffset,
                                               font: valueFont,
@@ -617,7 +607,7 @@ open class HorizontalBarChartRenderer: BarChartRenderer
                             }
                         }
                         
-                        bufferIndex = vals == nil ? (bufferIndex + 1) : (bufferIndex + vals!.count)
+                        bufferIndex += vals?.count ?? 1
                     }
                 }
             }

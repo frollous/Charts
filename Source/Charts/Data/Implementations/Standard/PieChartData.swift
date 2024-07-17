@@ -69,7 +69,7 @@ open class PieChartData: ChartData
     
     open override func dataSet(forLabel label: String, ignorecase: Bool) -> ChartDataSetProtocol?
     {
-        if dataSets.count == 0 || dataSets[0].label == nil
+        if dataSets.first?.label == nil
         {
             return nil
         }
@@ -95,19 +95,13 @@ open class PieChartData: ChartData
     {
         return dataSet?.entryForIndex(Int(highlight.x))
     }
-    
-    /// - returns: The total y-value sum across all DataSet objects the this object represents.
+
+    /// The total y-value sum across all DataSet objects the this object represents.
     @objc open var yValueSum: Double
     {
         guard let dataSet = dataSet else { return 0.0 }
-        
-        var yValueSum: Double = 0.0
-        
-        for i in 0..<dataSet.entryCount
-        {
-            yValueSum += dataSet.entryForIndex(i)?.y ?? 0.0
+        return (0..<dataSet.entryCount).reduce(into: 0) {
+            $0 += dataSet.entryForIndex($1)?.y ?? 0
         }
-        
-        return yValueSum
     }
 }
